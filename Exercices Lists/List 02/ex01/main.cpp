@@ -18,6 +18,7 @@ Opção 4. Listar todos os registros.
 Opção 5. Sair do sistema.
 */
 #include <iostream>
+#include <fstream>
 #define SIZECONT 100
 
 using namespace std;
@@ -35,6 +36,9 @@ void imprimirListaContatos(contato *lista, size_t size);
 void searchNome(contato *lista, size_t size);
 void deleteByIndex(contato *lista, size_t size);
 
+bool saveFile(string filepath, contato* lista, size_t registers);
+bool loadFile(string filepath, contato* lista, size_t* registers);
+
 int main()
 {
     contato contList[SIZECONT], newCont;
@@ -48,11 +52,13 @@ int main()
         cout << "2. Remover Registro por Indice" << endl;
         cout << "3. Pesquisar Nomes por Substring" << endl;
         cout << "4. Listar Todos os Registros" << endl;
-        cout << "5. Sair do Sistema" << endl;
+        cout << "5. Salvar dados em arquivo txt" << endl;
+        cout << "6. Trazer dados de arquivo txt" << endl;
+        cout << "0. Sair do Sistema" << endl;
         cout << "Digite uma das opcoes acima: " << endl;
         cin >> op;
 
-        if(op == 5) 
+        if(op == 0) 
         {
             cout << "Fechando programa..." << endl;
             break;
@@ -74,6 +80,12 @@ int main()
             break;
         case 4:
             imprimirListaContatos(contList, registers);
+            break;
+        case 5:
+            saveFile("database.txt", contList, registers);
+            break;
+        case 6:
+            loadFile("database.txt", contList, &registers);
             break;
         default:
             cout << "Opção Inválida!" << endl;
@@ -139,3 +151,47 @@ void deleteByIndex(contato *lista, size_t size)
     }
 }
 
+bool saveFile(string filepath, contato* lista, size_t registers)
+{
+    ofstream fp;
+    fp.open(filepath);
+
+    //Verificando se o arquivo está aberto
+    if(fp.is_open() == false) {
+        cout << "Erro, o arquivo não abriu." << endl;
+        return false;
+    }
+
+    fp << registers << endl;
+
+    for(size_t i=0; i < registers; i++){
+        fp << lista[i].nome << endl;
+        fp << lista[i].telefone << endl;
+    }
+
+    fp.close();
+
+    return true;
+}
+
+bool loadFile(string filepath, contato* lista, size_t* registers)
+{
+    ifstream fp;
+    fp.open(filepath);
+
+    if(fp.is_open() == false){
+        cout << "Error, database file don't found!" << endl;
+        return false;
+    }
+
+    fp >> *registers;
+    fp.ignore();
+
+    for(size_t i = 0; i < *registers; i++){
+        getline(fp, (lista + i)->nome);
+        getline(fp, (lista + i)->telefone);
+    }
+
+    fp.close();
+    return true;
+}
