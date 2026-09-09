@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#define SIZECONT 100
 
 using namespace std;
 
