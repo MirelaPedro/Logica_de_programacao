@@ -1,1 +1,92 @@
 
+#include <iostream>
+#include <fstream>
+#include <utility>
+#include <vector>
+#include <tuple>
+// retornar status da função se ocorreu tudo bem ou não
+
+using namespace std;
+
+typedef struct livro{
+    string nome;
+    string autor;
+    string editora;
+    int class_indic;
+    float valor;
+} livro;
+
+typedef struct cliente{
+    int cpf;
+    string nome;
+    int idade;
+} cliente;
+
+typedef vector <tuple <int, int, livro, string>> venda; // id da venda, id do cliente, livro vendido (retirado da lista) e data;
+
+// PROTOTYPES
+// livro
+pair<bool, string> cadastrarLivro(vector <livro> listaLivros);
+
+// cliente
+cliente cadastrarCliente();
+
+// vendas
+void cadastrarVenda(vector <livro> listaLivros, const vector <cliente> listaClientes, venda listaVendas);
+
+// utils
+pair<bool, string> verifySair();
+
+int main()
+{
+    vector <struct livro> livros;
+    vector <struct cliente> clientes;
+    venda vendas;
+
+
+    return;
+}
+
+pair<bool, string> cadastrarLivro(vector <livro> listaLivros)
+{
+    livro new;
+    pair<bool, string> verify;
+
+    cout << "APERTE 0 PARA SAIR A QUALQUER MOMENTO" << endl;
+
+    cin.ignore();
+    cout << "Id.........................: ";
+    verify = verifySair();
+    if(verify == false) return verify;
+    cin >> new.id;
+
+    cin.ignore();
+    cout << "Nome.......................: ";
+    getline(cin, new.nome);
+
+    cout << "Autor(a)...................: ";
+    getline(cin, new.autor);
+
+    cout << "Editora....................: ";
+    getline(cin, new.editora);
+
+    cout << "Classificação Indicativa...: ";
+    cin << new.class_indic;
+
+    cout << "Valor......................: ";
+    cin << new.valor;
+
+    return make_pair(true, new.nome);
+}
+
+cliente cadastrarCliente();
+
+pair<bool, string> verifySair()
+{
+    void verify;
+
+    cin >> verify;
+
+    if(verify == 0 || verify == "0") return make_pair(false, "Função abortada.");
+    return make_pair(true, "");
+}
