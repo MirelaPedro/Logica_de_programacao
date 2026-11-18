@@ -9,25 +9,29 @@ using namespace std;
 
 class Cliente{
     private:
+        int id;
         string nome;
         string endereco;
         string profissao;
         float salario;
 
     public:
-        Cliente(string nome, string endereco, string profissao, float salario){
+        Cliente( int id, string nome, string endereco, string profissao, float salario){
             this->nome = nome;
             this->endereco = endereco;
             this->profissao = profissao;
             this->salario = salario;
         }
 
-        string GetProfissao() const {return this->nome;}
+        string GetProfissao() const {return this->profissao;}
+        int GetId() const {return this->id;}
 
         string toString(){
             stringstream stt;
 
+            stt <<"---------------" << endl;
             stt <<"Nome: " << this->nome << "\nEndereço: " << this->endereco << "\nProfissão: " << this->profissao << "\nSalário: " << this->salario << endl;
+            stt <<"---------------" << endl;
             return stt.str();
         }
 };
@@ -35,18 +39,22 @@ class Cliente{
 
 class Conta{
     protected:
-        Cliente *cliente;
+        int id;
+        Cliente idCliente;
         float saldo;
 
     public:
         Conta(){
-            this->cliente = NULL;
+            this->cliente = 0;
             this->saldo = 0;
         }
-        Conta(float saldo, Cliente *cliente){
+        Conta(float saldo, int id, int idCliente){
             this->saldo = saldo;
-            this->cliente = cliente;
+            this->idCliente = idCliente;
         }
+
+        int GetId() const {return this->id;}
+        int GetIdCliente() const {return this->idCliente;}
 
         void depositar(float valor){
             this->saldo += valor;
@@ -83,9 +91,9 @@ class ContaEspecial : public Conta{
     private:
         float limiteAtual, limite;
     public:
-        ContaEspecial(float saldo, float limite){
-            this->saldo = saldo;
+        ContaEspecial(float saldo, float limite, int id, int idCliente) : Conta(saldo, idCliente){
             this->limite = limite;
+            this->limiteAtual = limite;
         }
 
         bool sacar(float valor){
