@@ -1,126 +1,125 @@
+#ifndef __CONTA__
+#define __CONTA__
+
 #include <iostream>
-#include <fstream>
-#include <vector>
-#define SIZECONT 100
+#include <sstream>
+#include <string>
 
 using namespace std;
 
-// prototypes
-void insert(vector <int> &lista); //propositalemente passagem por referências (ideal)
-void showAll(vector <int> lista); //propositalemente passagem por cópia (não ideal, gera cópia da variável)
-void search(vector <int> lista);
-void deleteByIndex(vector <int> &lista);
-void showByIndex(vector <int> *lista); //propositalemente passagem por ponteiro
+class Cliente{
+    private:
+        int id;
+        string nome;
+        string endereco;
+        string profissao;
+        float salario;
 
-
-int main()
-{
-    vector <int> contList;
-    int op;
-
-    while(true)
-    {
-        cout << "UFSC Numeric Manager System (int)" << endl;
-        cout << "---------------------------------" << endl;
-        cout << "1. Insert a Value" << endl;
-        cout << "2. Remove by Index" << endl;
-        cout << "3. Search a Number (show all occurences)" << endl;
-        cout << "4. Show All" << endl;
-        cout << "5. Show by index" << endl;
-        cout << "0. Exit" << endl;
-        cout << "Option: " << endl;
-        cin >> op;
-
-        if(op == 0) 
-        {
-            cout << "Fechando programa..." << endl;
-            break;
+    public:
+        Cliente( int id, string nome, string endereco, string profissao, float salario){
+            this->nome = nome;
+            this->endereco = endereco;
+            this->profissao = profissao;
+            this->salario = salario;
         }
 
-        switch (op)
-        {
-        case 1:
-            insert(contList);
-            break;
-        case 2:
-            deleteByIndex(contList);
-            break;
-        case 3:
-            search(contList);
-            break;
-        case 4:
-            showAll(contList);
-            break;
-        case 5:
-            showByIndex(&contList);
-            break;
-        default:
-            cout << "Opção Inválida!" << endl;
-            break;
+        string GetProfissao() const {return this->profissao;}
+        int GetId() const {return this->id;}
+
+        string toString(){
+            stringstream stt;
+
+            stt <<"---------------" << endl;
+            stt <<"Nome: " << this->nome << "\nEndereço: " << this->endereco << "\nProfissão: " << this->profissao << "\nSalário: " << this->salario << endl;
+            stt <<"---------------" << endl;
+            return stt.str();
         }
-    }
+};
 
-    return 0;
-}
 
-void insert(vector <int> &lista)
-{
-    int n;
-    cin.ignore();
-    cout << "Number: " ;
-    cin >> n;
+class Conta{
+    protected:
+        int id;
+        Cliente idCliente;
+        float saldo;
 
-    lista.push_back(n);
-
-    cout << "Value inserted into position: " << lista.size()-1 << endl;
-}
-
-void showAll(vector <int> lista)
-{
-    cout << "NUMBERS'S LIST" << endl;
-    for(size_t i = 0; i < lista.size(); i++){
-        cout << "["<<i<<"] -> "<< lista.at(i) << endl;
-        //cout << lista[i] << endl; (menos seguro)
-    }
-}
-
-void search(vector <int> lista)
-{
-    int search, numbersFind = 0;
-
-    cin.ignore();
-    cout << "Search: " ;
-    cin >> search;
-
-    for(size_t i = 0; i < lista.size(); i++){
-        if(search == lista[i]){
-            cout << "Número no index " << i << ": " << lista.at(i) << endl;
-            numbersFind++;
+    public:
+        Conta(){
+            this->cliente = 0;
+            this->saldo = 0;
         }
-    }
+        Conta(float saldo, int id, int idCliente){
+            this->saldo = saldo;
+            this->idCliente = idCliente;
+        }
 
-    cout << "QTD: " << numbersFind << endl;
-}
+        int GetId() const {return this->id;}
+        int GetIdCliente() const {return this->idCliente;}
 
-void deleteByIndex(vector <int> &lista)
-{
-    int index;
+        void depositar(float valor){
+            this->saldo += valor;
+        }
 
-    do{
-        cout << "Pos (begin in 0): " ;
-        cin >> index;
-    } while(index < 0 || index >= lista.size());
+        bool sacar(float valor){
+            if(valor > saldo){
+                return false;
+            }
+            this->saldo -= valor;
+            return true;
+        }
 
-    lista.erase(lista.begin() + index);
-}
+        string toString(){
+            string st;
+            st = 'Saldo: ';
+            st += this->saldo;
+            return st;
+        }
 
-void showByIndex(vector <int> *lista)
-{
-    int index = 0;
-    do{
-        cout << "Pos (begin in 0): " ;
-        cin >> index;
-    } while(index < 0 || index >= lista->size());
+        bool transferir(Conta conta){
+            cout << "Valor que deseja transferir: ";
+            float valor;
+            cin >> valor;
+            if(this->saldo < valor) return false;
+            conta.saldo += valor;
+            return true;
+        }
 
-    cout << "Número no index " << index << ": " << lista->at(index) << endl;
-}
+        
+};
+
+class ContaEspecial : public Conta{
+    private:
+        float limiteAtual, limite;
+    public:
+        ContaEspecial(float saldo, float limite, int id, int idCliente) : Conta(saldo, idCliente){
+            this->limite = limite;
+            this->limiteAtual = limite;
+        }
+
+        bool sacar(float valor){
+            if(valor > (this->saldo)){
+                if((valor - this->saldo) > this->limiteAtual) return false;
+
+                this->saldo = 0;
+                this->limiteAtual -= valor - this->saldo;
+                return true;
+            }
+            this->saldo -= valor;
+            return true;
+        }
+
+        bool transferir(Conta conta){
+            cout << "Valor que deseja transferir: ";
+            float valor;
+            cin >> valor;
+            if(!sacar(valor)) return false;
+
+            conta.depositar(valor);
+            return true;
+        }
+
+        bool restaurarLimite(){this->limiteAtual = this->limite;}
+};
+
+
+#endif
