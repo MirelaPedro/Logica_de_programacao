@@ -81,12 +81,36 @@ class Conta{
 
 class ContaEspecial : public Conta{
     private:
-        float limite;
+        float limiteAtual, limite;
     public:
         ContaEspecial(float saldo, float limite){
             this->saldo = saldo;
             this->limite = limite;
         }
+
+        bool sacar(float valor){
+            if(valor > (this->saldo)){
+                if((valor - this->saldo) > this->limiteAtual) return false;
+
+                this->saldo = 0;
+                this->limiteAtual -= valor - this->saldo;
+                return true;
+            }
+            this->saldo -= valor;
+            return true;
+        }
+
+        bool transferir(Conta conta){
+            cout << "Valor que deseja transferir: ";
+            float valor;
+            cin >> valor;
+            if(!sacar(valor)) return false;
+
+            conta.depositar(valor);
+            return true;
+        }
+
+        bool restaurarLimite(){this->limiteAtual = this->limite;}
 };
 
 
